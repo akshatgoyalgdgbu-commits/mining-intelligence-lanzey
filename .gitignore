@@ -1,0 +1,32 @@
+# Dependencies
+frontend/node_modules/
+backend/node_modules/
+
+# Environment — never commit real secrets
+frontend/.env
+backend/.env
+.env
+
+# Database
+backend/prisma/lanzey.db
+backend/prisma/*.db-journal
+
+# Uploads (user files)
+backend/uploads/*
+!backend/uploads/.gitkeep
+
+# Build output
+frontend/dist/
+frontend/.vite/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/settings.json
+.idea/

@@ -1,0 +1,402 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── LANZEY Design System — Motion & Animation (Spec 56) ──────────── */
+
+@layer base {
+  :root {
+    --color-bg:          #0b1a14;
+    --color-surface:     #0f2018;
+    --color-card:        #122318;
+    --color-card2:       #0e1f16;
+    --color-border:      #1c3828;
+    --color-green:       #00c853;
+    --color-green-dim:   #009e42;
+    --color-green-glow:  #33d46e;
+    --color-teal:        #00897b;
+    --color-muted:       #6b7280;
+    --color-text:        #e8f0eb;
+    --color-subtle:      #9ab5a0;
+    --nav-bg:            rgba(10,22,15,0.92);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    margin: 0;
+  }
+
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--color-surface); }
+  ::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: 3px; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   KEYFRAMES
+   ───────────────────────────────────────────────────────────────────── */
+
+@keyframes fade-up {
+  0%   { opacity: 0; transform: translateY(18px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fade-in {
+  0%   { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* 56.1 — Hero background: slow cinematic zoom + gentle horizontal drift */
+@keyframes bg-zoom {
+  0%   { transform: scale(1.08) translateX(0px);   opacity: 0.85; }
+  15%  { opacity: 1; }
+  100% { transform: scale(1.01) translateX(-6px);  opacity: 1; }
+}
+
+/* 56.2 — SUSTAINABLE text light sweep */
+@keyframes sweep {
+  0%   { background-position: -200% center; }
+  100% { background-position: 300% center; }
+}
+
+/* 56.3 / 56.6 — Slide in from right */
+@keyframes slide-in-right {
+  0%   { opacity: 0; transform: translateX(32px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* Panel slide from left */
+@keyframes slide-in-left {
+  0%   { opacity: 0; transform: translateX(-32px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+/* 56.3 / 56.6 — Icon scale-in on reveal */
+@keyframes scale-in {
+  0%   { opacity: 0; transform: scale(0.82); }
+  100% { opacity: 1; transform: scale(1); }
+}
+
+/* 56.15 — AI badge / critical risk: one-time pulse, never continuous */
+@keyframes pulse-once {
+  0%   { opacity: 0.5; box-shadow: 0 0 0 0   rgba(0,200,83,0.45); }
+  50%  { opacity: 1;   box-shadow: 0 0 0 7px rgba(0,200,83,0); }
+  100% { opacity: 1;   box-shadow: 0 0 0 0   rgba(0,200,83,0); }
+}
+
+/* 56.20 — Skeleton shimmer */
+@keyframes shimmer {
+  0%   { background-position: -400px 0; }
+  100% { background-position:  400px 0; }
+}
+
+/* 56.4 — Pipeline data-flow dot travels vertically */
+@keyframes flow-down {
+  0%   { transform: translateY(0);    opacity: 0; }
+  8%   { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { transform: translateY(100%); opacity: 0; }
+}
+
+/* 56.17 — Drawer slides in from right */
+@keyframes drawer-in {
+  0%   { transform: translateX(100%); }
+  100% { transform: translateX(0); }
+}
+
+/* 56.17 — Modal scale-fade */
+@keyframes modal-in {
+  0%   { opacity: 0; transform: scale(0.95) translateY(-10px); }
+  100% { opacity: 1; transform: scale(1)    translateY(0); }
+}
+
+/* 56.16 — Critical risk subtle slow pulse (not flash) */
+@keyframes status-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.38; }
+}
+
+/* 56.9 — Page enter */
+@keyframes page-enter {
+  0%   { opacity: 0; transform: translateY(6px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+/* 56.12 — Chart line draw */
+@keyframes draw-line {
+  0%   { stroke-dashoffset: 1000; }
+  100% { stroke-dashoffset: 0; }
+}
+
+/* 56.13 — Progress bar fill pulse while active */
+@keyframes progress-pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.72; }
+}
+
+/* Micro-interaction: check appears */
+@keyframes check-appear {
+  0%   { opacity: 0; transform: scale(0.6) rotate(-10deg); }
+  70%  { transform: scale(1.1) rotate(2deg); }
+  100% { opacity: 1; transform: scale(1)   rotate(0deg); }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   COMPONENT LAYER
+   ───────────────────────────────────────────────────────────────────── */
+
+@layer components {
+
+  /* ── Skeleton (56.20) ──────────────────────────────────────────── */
+  .skeleton {
+    background: linear-gradient(90deg, #122318 25%, #1a3225 50%, #122318 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.6s linear infinite;
+    border-radius: 0.375rem;
+  }
+
+  /* ── SUSTAINABLE sweep highlight (56.2) ────────────────────────── */
+  .text-sweep {
+    background: linear-gradient(
+      90deg,
+      #00c853 0%,
+      #33d46e 28%,
+      #80e8a0 50%,
+      #33d46e 72%,
+      #00c853 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: sweep 1.8s ease-in-out 0.55s both;
+  }
+
+  /* ── Buttons (56.5 / 56.19) ────────────────────────────────────── */
+  .btn-primary {
+    @apply relative inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm
+           text-white border-2 border-[#00c853]
+           transition-all duration-200
+           hover:-translate-y-0.5 hover:bg-[#00c853]/10 hover:shadow-[0_4px_20px_rgba(0,200,83,0.18)]
+           active:translate-y-0 active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00c853]/60;
+  }
+
+  /* 56.5 — secondary CTA: Login */
+  .btn-secondary {
+    @apply relative inline-flex items-center gap-2 px-7 py-3 rounded-full font-semibold text-sm
+           text-[#9ab5a0] border border-[#1c3828] bg-transparent
+           transition-all duration-200
+           hover:text-white hover:border-[#00c853]/40 hover:bg-[#00c853]/5 hover:-translate-y-0.5
+           active:translate-y-0 active:scale-[0.97]
+           disabled:opacity-40 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00c853]/40;
+  }
+
+  .btn-solid {
+    @apply relative inline-flex items-center gap-2 px-6 py-2.5 rounded-full font-semibold text-sm
+           bg-[#00c853] text-[#0b1a14]
+           transition-all duration-200
+           hover:-translate-y-0.5 hover:bg-[#33d46e] hover:shadow-[0_4px_16px_rgba(0,200,83,0.3)]
+           active:translate-y-0 active:scale-[0.98]
+           disabled:opacity-40 disabled:cursor-not-allowed
+           focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#00c853];
+  }
+
+  .btn-ghost {
+    @apply relative inline-flex items-center gap-2 px-4 py-2 rounded-md font-medium text-sm
+           text-[#9ab5a0] bg-transparent
+           transition-all duration-150
+           hover:text-white hover:bg-white/5
+           active:scale-[0.97]
+           focus-visible:outline-none;
+  }
+
+  /* ── CTA arrow shift (56.5) — used with group-hover ────────────── */
+  .arrow-shift {
+    transition: transform 200ms ease;
+  }
+  .group:hover .arrow-shift,
+  .group\/btn:hover .arrow-shift {
+    transform: translateX(4px);
+  }
+
+  /* ── KPI card (56.11) ──────────────────────────────────────────── */
+  .kpi-card {
+    @apply bg-[#122318] border border-[#1c3828] rounded-xl p-5
+           transition-all duration-200
+           hover:border-[#00c853]/30 hover:shadow-lg;
+  }
+
+  /* ── Progress bar (56.13) ──────────────────────────────────────── */
+  .progress-bar      { @apply h-1.5 rounded-full bg-[#1c3828] overflow-hidden; }
+  .progress-bar-fill { @apply h-full rounded-full bg-[#00c853] transition-all duration-700 ease-out; }
+  .progress-bar-fill.active {
+    animation: progress-pulse 1.8s ease-in-out infinite;
+  }
+
+  /* ── Table interactions (56.18) ────────────────────────────────── */
+  .table-row-interactive { @apply transition-colors duration-150 cursor-pointer; }
+  .table-row-interactive:hover { background-color: rgba(0,200,83,0.035); }
+  .table-row-interactive:hover .row-actions { opacity: 1; }
+  .row-actions { opacity: 0; transition: opacity 150ms ease; }
+
+  /* ── AI badge (56.15) — pulses once on appearance ──────────────── */
+  .ai-badge {
+    @apply inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full
+           text-xs font-medium text-[#00c853]
+           bg-[#00c853]/10 border border-[#00c853]/20;
+    animation: pulse-once 0.9s ease-out 0.2s both;
+  }
+
+  /* ── Department card (56.7) ────────────────────────────────────── */
+  .dept-card {
+    @apply flex flex-col p-4 rounded-xl border border-[#1c3828] bg-[#0e1f16]
+           transition-all duration-[250ms] cursor-pointer
+           hover:-translate-y-1 hover:border-[#00c853]/40
+           hover:shadow-[0_6px_28px_rgba(0,200,83,0.09)];
+  }
+  .dept-arrow {
+    @apply w-8 h-8 rounded-full border border-[#1c3828] flex items-center justify-center
+           text-[#00c853] mt-auto
+           transition-all duration-[250ms]
+           group-hover/dept:border-[#00c853] group-hover/dept:bg-[#00c853]/10
+           group-hover/dept:translate-x-1;
+  }
+
+  /* ── Stage active glow (56.13) ─────────────────────────────────── */
+  .stage-active {
+    box-shadow: 0 0 0 2px rgba(0,200,83,0.25), 0 4px 16px rgba(0,200,83,0.08);
+  }
+
+  /* ── Risk matrix cell (56.16) ──────────────────────────────────── */
+  .risk-cell {
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    cursor: pointer;
+  }
+  .risk-cell:hover {
+    transform: scale(1.06);
+    border-color: rgba(0,200,83,0.5) !important;
+    z-index: 10;
+    position: relative;
+  }
+  .risk-cell.selected {
+    border-color: rgba(0,200,83,0.75) !important;
+    box-shadow: 0 0 0 2px rgba(0,200,83,0.28);
+  }
+
+  /* ── Nav underline active ──────────────────────────────────────── */
+  .nav-link-active {
+    color: #00c853;
+    position: relative;
+  }
+  .nav-link-active::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 0; right: 0;
+    height: 2px;
+    background: #00c853;
+    border-radius: 1px;
+  }
+
+  /* ── Scrollable panel ──────────────────────────────────────────── */
+  .panel-scroll { overflow-y: auto; overflow-x: hidden; }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   UTILITY ANIMATIONS
+   ───────────────────────────────────────────────────────────────────── */
+
+/* Chart line draw (56.12) */
+.chart-line-animate {
+  stroke-dasharray: 1000;
+  stroke-dashoffset: 1000;
+  animation: draw-line 0.9s ease-out forwards;
+}
+
+/* Check icon micro-animation (56.13) */
+.check-appear {
+  animation: check-appear 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   HERO STAGGER TIMING (56.1)
+   ───────────────────────────────────────────────────────────────────── */
+.hero-stagger-1 { animation-delay:   0ms; }
+.hero-stagger-2 { animation-delay: 150ms; }
+.hero-stagger-3 { animation-delay: 300ms; }
+.hero-stagger-4 { animation-delay: 450ms; }
+.hero-stagger-5 { animation-delay: 600ms; }
+.hero-stagger-6 { animation-delay: 750ms; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   GENERIC STAGGER UTILITIES
+   ───────────────────────────────────────────────────────────────────── */
+.stagger-1 { animation-delay:   0ms; }
+.stagger-2 { animation-delay:  80ms; }
+.stagger-3 { animation-delay: 160ms; }
+.stagger-4 { animation-delay: 240ms; }
+.stagger-5 { animation-delay: 320ms; }
+.stagger-6 { animation-delay: 400ms; }
+.stagger-7 { animation-delay: 480ms; }
+.stagger-8 { animation-delay: 560ms; }
+
+/* ─────────────────────────────────────────────────────────────────────
+   REDUCED MOTION (56.21) — full override
+   ───────────────────────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration:       0.01ms !important;
+    animation-iteration-count: 1     !important;
+    transition-duration:       0.01ms !important;
+    scroll-behavior:           auto  !important;
+  }
+
+  /* Skeleton stays visible but no shimmer */
+  .skeleton {
+    animation: none;
+    background: #122318;
+  }
+
+  /* SUSTAINABLE text stays green without sweep */
+  .text-sweep {
+    animation: none;
+    background: #00c853;
+    background-size: auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* No chart drawing */
+  .chart-line-animate {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
+
+  /* ai-badge: no pulse */
+  .ai-badge { animation: none; }
+
+  /* No stage glow animation */
+  .stage-active {
+    box-shadow: 0 0 0 1px rgba(0,200,83,0.35);
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────
+   SCRIPT FONT FALLBACK
+   ───────────────────────────────────────────────────────────────────── */
+.script-text {
+  font-family: 'Brush Script MT', 'Segoe Script', cursive;
+  color: #00c853;
+  font-size: 1.15rem;
+  line-height: 1.4;
+}

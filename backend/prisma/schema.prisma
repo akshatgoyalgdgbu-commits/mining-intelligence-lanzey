@@ -1,0 +1,387 @@
+// LANZEY — Prisma Schema (PostgreSQL deployment)
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ── User ─────────────────────────────────────────────────────────────────
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         String   // ADMIN | CIL | CMPDI | GEOLOGICAL | ENVIRONMENT | MACHINERY | RESERVE_CHECKER
+  department   String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  documents Document[]
+  reports   Report[]
+  auditLogs AuditLog[]
+
+  @@map("users")
+}
+
+// ── Site / Mine ───────────────────────────────────────────────────────────
+model Site {
+  id        String   @id @default(uuid())
+  code      String   @unique
+  name      String
+  location  String?
+  state     String?
+  district  String?
+  latitude  Float?
+  longitude Float?
+  type      String?
+  company   String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  production        Production[]
+  geologicalData    GeologicalData[]
+  geologicalSeams   GeologicalSeam[]
+  reserveData       ReserveData[]
+  machinery         Machinery[]
+  dispatch          Dispatch[]
+  environmentalData EnvironmentalData[]
+  documents         Document[]
+  reports           Report[]
+  risks             RiskItem[]
+  knowledge         KnowledgeEntry[]
+
+  @@map("sites")
+}
+
+// ── Document ──────────────────────────────────────────────────────────────
+model Document {
+  id                 String   @id @default(uuid())
+  filename           String
+  originalName       String
+  mimeType           String
+  sizeByes           Int
+  path               String
+  status             String   @default("UPLOADED")
+  department         String?
+  siteId             String?
+  uploadedById       String
+  errorMessage       String?
+  extractedText      String?
+  metadata           String?  // JSON string
+  pageCount          Int?
+  processingProgress Int?     @default(0)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  site       Site?    @relation(fields: [siteId], references: [id])
+  uploadedBy User     @relation(fields: [uploadedById], references: [id])
+  reports    ReportDocument[]
+  knowledge  KnowledgeEntry[]
+
+  @@map("documents")
+}
+
+// ── Report ────────────────────────────────────────────────────────────────
+model Report {
+  id            String   @id @default(uuid())
+  title         String
+  type          String
+  department    String
+  siteId        String?
+  period        String?
+  summary       String?
+  content       String?  // JSON string
+  status        String   @default("DRAFT")
+  generatedById String
+  exportedAt    DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  site        Site?    @relation(fields: [siteId], references: [id])
+  generatedBy User     @relation(fields: [generatedById], references: [id])
+  documents   ReportDocument[]
+
+  @@map("reports")
+}
+
+model ReportDocument {
+  reportId   String
+  documentId String
+  report     Report   @relation(fields: [reportId], references: [id])
+  document   Document @relation(fields: [documentId], references: [id])
+
+  @@id([reportId, documentId])
+  @@map("report_documents")
+}
+
+// ── Production ────────────────────────────────────────────────────────────
+model Production {
+  id           String   @id @default(uuid())
+  siteId       String
+  date         DateTime
+  year         Int
+  month        Int?
+  quarter      String?
+  productionMT Float
+  targetMT     Float?
+  coalType     String?
+  seam         String?
+  shift        String?
+  source       String?
+  sourceDoc    String?
+  sourcePage   Int?
+  createdAt    DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@map("production")
+}
+
+// ── Dispatch ──────────────────────────────────────────────────────────────
+model Dispatch {
+  id          String   @id @default(uuid())
+  siteId      String
+  date        DateTime
+  dispatchMT  Float
+  destination String?
+  mode        String?
+  consignee   String?
+  source      String?
+  sourceDoc   String?
+  sourcePage  Int?
+  createdAt   DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@map("dispatch")
+}
+
+// ── GeologicalData ────────────────────────────────────────────────────────
+model GeologicalData {
+  id              String    @id @default(uuid())
+  siteId          String
+  formation       String?
+  blockName       String?
+  seamCount       Int?
+  totalThickness  Float?
+  depth           Float?
+  faults          String?
+  strata          String?
+  explorationDate DateTime?
+  notes           String?
+  source          String?
+  sourceDoc       String?
+  sourcePage      Int?
+  createdAt       DateTime  @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@map("geological_data")
+}
+
+// ── GeologicalSeam ────────────────────────────────────────────────────────
+model GeologicalSeam {
+  id               String   @id @default(uuid())
+  siteId           String
+  seamName         String
+  thickness        Float?
+  depth            Float?
+  dip              Float?
+  strike           String?
+  ashContent       Float?
+  moistureContent  Float?
+  gCV              Float?
+  sulfurContent    Float?
+  gradeDesignation String?
+  mineable         Boolean? @default(true)
+  source           String?
+  sourceDoc        String?
+  sourcePage       Int?
+  createdAt        DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@map("geological_seams")
+}
+
+// ── ReserveData ───────────────────────────────────────────────────────────
+model ReserveData {
+  id                 String    @id @default(uuid())
+  siteId             String
+  blockName          String?
+  category           String?
+  totalReserveMT     Float?
+  mineableReserveMT  Float?
+  coalType           String?
+  gradeDesignation   String?
+  verificationStatus String?
+  verifiedBy         String?
+  verifiedAt         DateTime?
+  notes              String?
+  source             String?
+  sourceDoc          String?
+  sourcePage         Int?
+  createdAt          DateTime  @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@map("reserve_data")
+}
+
+// ── Machinery ─────────────────────────────────────────────────────────────
+model Machinery {
+  id                String    @id @default(uuid())
+  siteId            String
+  machineId         String    @unique
+  name              String
+  type              String
+  make              String?
+  model             String?
+  capacity          String?
+  yearOfManufacture Int?
+  commissionDate    DateTime?
+  status            String    @default("OPERATIONAL")
+  location          String?
+  hoursOperated     Float?    @default(0)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  site        Site          @relation(fields: [siteId], references: [id])
+  maintenance Maintenance[]
+  telemetry   Telemetry[]
+
+  @@map("machinery")
+}
+
+// ── Maintenance ───────────────────────────────────────────────────────────
+model Maintenance {
+  id          String    @id @default(uuid())
+  machineryId String
+  type        String
+  description String?
+  startDate   DateTime
+  endDate     DateTime?
+  duration    Int?
+  technician  String?
+  cost        Float?
+  parts       String?
+  status      String    @default("COMPLETED")
+  source      String?
+  createdAt   DateTime  @default(now())
+
+  machinery Machinery @relation(fields: [machineryId], references: [id])
+
+  @@map("maintenance")
+}
+
+// ── Telemetry ─────────────────────────────────────────────────────────────
+model Telemetry {
+  id          String   @id @default(uuid())
+  machineryId String
+  recordedAt  DateTime @default(now())
+  fuelLevel   Float?
+  engineTemp  Float?
+  oilPressure Float?
+  rpm         Float?
+  hoursToday  Float?
+  latitude    Float?
+  longitude   Float?
+  speed       Float?
+  loadWeight  Float?
+  status      String?
+
+  machinery Machinery @relation(fields: [machineryId], references: [id])
+
+  @@map("telemetry")
+}
+
+// ── EnvironmentalData ─────────────────────────────────────────────────────
+model EnvironmentalData {
+  id              String   @id @default(uuid())
+  siteId          String
+  monitoringDate  DateTime
+  paramType       String
+  parameter       String
+  value           Float?
+  unit            String?
+  standard        Float?
+  compliant       Boolean?
+  location        String?
+  observation     String?
+  clearanceNumber String?
+  permitNumber    String?
+  source          String?
+  sourceDoc       String?
+  sourcePage      Int?
+  createdAt       DateTime @default(now())
+
+  site Site @relation(fields: [siteId], references: [id])
+
+  @@map("environmental_data")
+}
+
+// ── RiskItem ──────────────────────────────────────────────────────────────
+model RiskItem {
+  id                String    @id @default(uuid())
+  siteId            String?
+  title             String
+  category          String
+  severity          Int
+  likelihood        Int
+  level             String
+  trend             String    @default("flat")
+  owner             String?
+  description       String?
+  controls          String?   // JSON array string
+  recommendedAction String?
+  lastReview        DateTime?
+  status            String    @default("OPEN")
+  source            String?
+  sourceDoc         String?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  site Site? @relation(fields: [siteId], references: [id])
+
+  @@map("risk_items")
+}
+
+// ── AuditLog ──────────────────────────────────────────────────────────────
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  action    String
+  entity    String?
+  entityId  String?
+  details   String?  // JSON string
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  user User? @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+// ── KnowledgeEntry — extracted fields from documents ─────────────────
+model KnowledgeEntry {
+  id          String   @id @default(uuid())
+  documentId  String
+  siteId      String?
+  department  String
+  fieldName   String
+  fieldValue  String
+  confidence  Float?   @default(0.8)
+  sourcePage  Int?
+  extractedAt DateTime @default(now())
+
+  document Document @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  site     Site?    @relation(fields: [siteId], references: [id])
+
+  @@unique([documentId, fieldName])
+  @@map("knowledge_entries")
+}
