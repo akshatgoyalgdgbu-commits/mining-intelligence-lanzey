@@ -43,6 +43,8 @@ app.use(helmet({
 const allowedOrigins = [
   'http://localhost:5173',
   process.env.FRONTEND_URL,
+  process.env.VERCEL_URL && `https://${process.env.VERCEL_URL}`,
+  process.env.VERCEL_PROJECT_PRODUCTION_URL && `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
 ].filter(Boolean)
 
 app.use(cors({
@@ -89,6 +91,9 @@ if (process.env.NODE_ENV !== 'test') {
 
 // ── Static file serving (uploads) ────────────────────────────────────
 app.use('/uploads', express.static(path.resolve(process.env.UPLOAD_DIR || './uploads')))
+// Vercel serves uploads through the API function rewrite because its static
+// asset layer cannot read files written into the function's temporary disk.
+app.use('/api/uploads', express.static(path.resolve(process.env.UPLOAD_DIR || './uploads')))
 
 // ── Health check ──────────────────────────────────────────────────────
 app.get('/api/health', (req, res) => {
@@ -117,16 +122,18 @@ app.use('/api/knowledge',   knowledgeRoutes)
 app.use('/api/validate',    validateRoutes)
 app.use('/api/hitl',        hitlRoutes)
 
-// In production the Express service also serves the Vite build, so the app
-// and API share one origin and the frontend can use the relative /api base.
-const frontendDist = path.resolve(__dirname, '../../frontend/dist')
-app.use(express.static(frontendDist))
-app.get('*', (req, res, next) => {
-  if (req.path.startsWith('/api/')) return next()
-  res.sendFile(path.join(frontendDist, 'index.html'), (err) => {
-    if (err) next(err)
+// Render and local Node serve the Vite build from Express. On Vercel, static
+// assets and SPA routes are handled by the platform and this app is an API function.
+if (process.env.VERCEL !== '1') {
+  const frontendDist = path.resolve(__dirname, '../../frontend/dist')
+  app.use(express.static(frontendDist))
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next()
+    res.sendFile(path.join(frontendDist, 'index.html'), (err) => {
+      if (err) next(err)
+    })
   })
-})
+}
 
 // ── 404 ───────────────────────────────────────────────────────────────
 app.use((req, res) => {
@@ -137,11 +144,14 @@ app.use((req, res) => {
 app.use(errorHandler)
 
 // ── Start ─────────────────────────────────────────────────────────────
-app.listen(PORT, () => {
-  console.log(`\n🟢 LANZEY API running on http://localhost:${PORT}`)
-  console.log(`   Environment : ${process.env.NODE_ENV}`)
-  console.log(`   DB          : ${(process.env.DATABASE_URL || '').replace(/:([^@]+)@/, ':***@')}`)
-  console.log(`   Health      : http://localhost:${PORT}/api/health\n`)
-})
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`\n🟢 LANZEY API running on http://localhost:${PORT}`)
+    console.log(`   Environment : ${process.env.NODE_ENV}`)
+    console.log(`   DB          : ${(process.env.DATABASE_URL || '').replace(/:([^@]+)@/, ':***@')}`)
+    console.log(`   Health      : http://localhost:${PORT}/api/health\n`)
+  })
+}
 
 module.exports = app
+
