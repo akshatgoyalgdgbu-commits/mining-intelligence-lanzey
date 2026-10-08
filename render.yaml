@@ -1,27 +1,19 @@
-databases:
-  - name: lanzey-db
-    databaseName: lanzey
-    user: lanzey
-    plan: free
-
 services:
   - type: web
-    name: lanzey
+    name: lanzey-mining-intelligence
     runtime: node
     plan: free
+    region: singapore
     buildCommand: >-
       cd backend && npm ci && npx prisma generate &&
       cd ../frontend && npm ci && VITE_API_URL=/api npm run build
-    startCommand: cd backend && npx prisma migrate deploy && npm start
-    initialDeployHook: cd backend && node src/utils/seed.js
+    startCommand: cd backend && npx prisma migrate deploy && node src/utils/seed-if-empty.js && npm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_ENV
         value: production
       - key: DATABASE_URL
-        fromDatabase:
-          name: lanzey-db
-          property: connectionString
+        value: file:/tmp/lanzey.db
       - key: JWT_SECRET
         generateValue: true
       - key: ADMIN_EMAIL

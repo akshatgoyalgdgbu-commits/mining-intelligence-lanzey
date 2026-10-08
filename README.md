@@ -78,7 +78,7 @@ For a full end-to-end demo, deploy the backend separately and set `VITE_API_URL`
 | --- | --- |
 | Frontend | React 18, TypeScript, Vite, Tailwind CSS, React Router |
 | Backend | Node.js, Express |
-| Data layer | Prisma ORM with PostgreSQL |
+| Data layer | Prisma ORM with SQLite for local/demo hosting |
 | Authentication | JWT and bcrypt |
 | Document processing | pdf-parse, mammoth, xlsx, and multer |
 
@@ -91,7 +91,7 @@ For a full end-to-end demo, deploy the backend separately and set `VITE_API_URL`
 
 ## Quick start
 
-**Prerequisites:** Node.js 18 or newer, npm, and PostgreSQL.
+**Prerequisites:** Node.js 18 or newer and npm.
 
 ### 1. Start the backend
 
@@ -162,7 +162,7 @@ The root [`.env.example`](./.env.example) includes these settings:
 | Variable | Used by | Purpose |
 | --- | --- | --- |
 | `VITE_API_URL` | Frontend | Public base URL for the backend API |
-| `DATABASE_URL` | Backend | PostgreSQL connection string |
+| `DATABASE_URL` | Backend | SQLite file URL (demo) or configured database connection string |
 | `JWT_SECRET` | Backend | Secret used to sign tokens; use a long random value |
 | `JWT_EXPIRES_IN` | Backend | Token lifetime |
 | `PORT` | Backend | API server port |
@@ -178,21 +178,18 @@ Do not put backend secrets in Vite variables. Values prefixed with `VITE_` are i
 ### Full-stack demo on Render
 
 The root `render.yaml` deploys the Vite frontend and Express API together as
-one service, provisions PostgreSQL, generates a JWT signing secret, and seeds
-one administrator account. The admin email and password are prompted as
-private values during Blueprint setup; use a unique password of at least 16
-characters. The `/api/health` endpoint is used as the health check.
+one free web service, uses an SQLite database in `/tmp`, generates a JWT
+signing secret, and seeds one administrator account. Configure `ADMIN_EMAIL`
+and a unique `ADMIN_PASSWORD` of at least 16 characters in Render.
 
 To deploy, push this project to a GitHub repository, then create a Render
 Blueprint from that repository and apply `render.yaml`. The app will be served
 from the generated `onrender.com` URL, and API requests use the same origin.
 
-This configuration uses Render's free service and database tiers. Free
-services can sleep when idle, and the free database is temporary. Uploaded
-documents are written to the service's temporary filesystem and can disappear
-when the service restarts or redeploys. Do not use this configuration for
-private or production mining records. Durable database retention and uploaded
-file storage require persistent/managed storage and may incur provider costs.
+This free demo can sleep while idle. Its SQLite database and uploaded documents
+are on temporary storage and can disappear after a restart or redeploy. Do not
+use it for private or production mining records. Durable database retention and
+uploaded file storage require managed/persistent storage and may incur costs.
 
 The production seed creates only the administrator configured in Render. It
 does not create the public demo accounts/password. Local development still
@@ -200,7 +197,7 @@ seeds the demo accounts described above.
 
 ### Backend
 
-The backend starts with `node src/index.js` (or `npm run dev` for local development). It uses PostgreSQL and stores uploaded files under `UPLOAD_DIR`.
+The backend starts with `node src/index.js` (or `npm run dev` for local development). It uses Prisma and stores uploaded files under `UPLOAD_DIR`.
 
 <details>
 <summary><strong>Build the frontend locally</strong></summary>
@@ -250,7 +247,7 @@ The Express API is mounted under `/api`. See the backend source for request and 
 
 - OCR for scanned PDFs needs an external OCR service; the current PDF path handles text PDFs.
 - Field extraction is rule-based and should be reviewed by a human.
-- The included Render free-tier configuration is for demonstration only: services may sleep, its free database is temporary, and uploaded files use temporary storage.
+- The included Render free-tier configuration is for demonstration only: services may sleep, and the SQLite database and uploaded files use temporary storage.
 - Use durable database and object storage before uploading private or production mining records.
 
 ---
