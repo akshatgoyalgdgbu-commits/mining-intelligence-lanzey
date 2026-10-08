@@ -24,10 +24,10 @@ if (!process.env.ADMIN_PASSWORD || process.env.ADMIN_PASSWORD.length < 16) {
 
 run('npx', ['prisma', 'generate'], backend)
 run('npx', ['prisma', 'db', 'push'], backend, {
-  DATABASE_URL: 'file:./prisma/vercel-demo.db',
+  DATABASE_URL: 'file:./vercel-demo.db',
 })
 run(process.execPath, [path.join(backend, 'src/utils/seed-if-empty.js')], backend, {
-  DATABASE_URL: 'file:./prisma/vercel-demo.db',
+  DATABASE_URL: 'file:./vercel-demo.db',
   NODE_ENV: 'production',
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || 'demo.admin@lanzey.local',
 })
