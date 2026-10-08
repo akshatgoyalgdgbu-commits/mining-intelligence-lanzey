@@ -21,18 +21,30 @@ import {
   LayoutDashboard, FileSearch, MessageSquareText,
   AlertTriangle, FileStack, Settings,
   ChevronLeft, ChevronRight, Leaf, FileText, Users2, Database,
+  ScanSearch, ClipboardCheck, ScrollText, Building2, HardHat,
+  Mountain, Cpu, ShieldCheck,
 } from 'lucide-react'
 import { useReducedMotion } from '@/hooks'
 
 const NAV_ITEMS = [
   { icon: LayoutDashboard,   label: 'Dashboard',    href: '/dashboard'           },
   { icon: FileSearch,        label: 'Documents',    href: '/documents'           },
+  { icon: FileStack,         label: 'Processing',   href: '/processing'          },
+  { icon: ScanSearch,        label: 'OCR Results',  href: '/ocr-results'         },
+  { icon: ClipboardCheck,   label: 'HITL Review',  href: '/hitl'                },
   { icon: Database,          label: 'Knowledge',    href: '/knowledge'           },
   { icon: MessageSquareText, label: 'Ask AI',       href: '/ask'                 },
   { icon: AlertTriangle,     label: 'Risk Intel',   href: '/risk'                },
-  { icon: FileStack,         label: 'Processing',   href: '/processing'          },
-  { icon: FileText,          label: 'Reports',      href: '/reports/generate'    },
+  { icon: FileText,          label: 'Reports & Validation', href: '/reports/generate' },
   { icon: Users2,            label: 'Official Q',   href: '/query/official'      },
+  { icon: ScrollText,        label: 'Audit Trail',  href: '/audit'               },
+  { icon: ShieldCheck,       label: 'Admin Console',href: '/dashboard/admin'     },
+  { icon: Building2,         label: 'CIL Workspace', href: '/dashboard/cil'       },
+  { icon: HardHat,           label: 'CMPDI Workspace',href: '/dashboard/cmpdi'    },
+  { icon: Mountain,          label: 'Geological',   href: '/dashboard/geological' },
+  { icon: Leaf,              label: 'Environmental',href: '/dashboard/environment'},
+  { icon: Cpu,               label: 'Machinery',    href: '/dashboard/machinery'  },
+  { icon: Database,          label: 'Reserve Check',href: '/dashboard/reserve'   },
 ] as const
 
 const BOTTOM_ITEMS = [
@@ -179,7 +191,7 @@ export function Sidebar({ onCollapsedChange }: { onCollapsedChange?: (c: boolean
       </div>
 
       {/* ── Nav items ── */}
-      <nav className="flex-1 py-3 flex flex-col gap-0.5 overflow-hidden px-2">
+      <nav className="flex-1 min-h-0 py-3 flex flex-col gap-0.5 overflow-y-auto overflow-x-hidden px-2">
         {NAV_ITEMS.map(item => (
           <SidebarNavItem
             key={item.href}
@@ -221,3 +233,4 @@ export function Sidebar({ onCollapsedChange }: { onCollapsedChange?: (c: boolean
     </aside>
   )
 }
+
