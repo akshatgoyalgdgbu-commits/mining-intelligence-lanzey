@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "installCommand": "npm ci --prefix backend --include=dev && npm ci --prefix frontend --include=dev",
+  "buildCommand": "node scripts/vercel-build.js",
+  "outputDirectory": "frontend/dist",
+  "functions": {
+    "api/[...path].js": {
+      "includeFiles": "backend/prisma/vercel-demo.db"
+    }
+  },
+  "rewrites": [
+    { "source": "/uploads/:path*", "destination": "/api/uploads/:path*" },
+    { "source": "/:path*", "destination": "/" }
+  ]
+}
+
