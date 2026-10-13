@@ -6,7 +6,7 @@
 
 <p align="center">
   <a href="https://mining-intelligence-urbannova.vercel.app/"><img src="https://img.shields.io/badge/Live_Preview-Vercel-black?logo=vercel" alt="Open the live LANZEY preview"></a>
-  <a href="https://github.com/Kirtika44/MINING_INTELLIGENCE"><img src="https://img.shields.io/badge/Source-GitHub-181717?logo=github" alt="View source on GitHub"></a>
+  <a href="https://github.com/akshatgoyalgdgbu-commits/mining-intelligence-lanzey"><img src="https://img.shields.io/badge/Source-GitHub-181717?logo=github" alt="View source on GitHub"></a>
   <a href="./Lanzey_SIH_Evaluator_Report.pdf"><img src="https://img.shields.io/badge/Evaluator_Report-PDF-b31b1b" alt="Read the evaluator report"></a>
 </p>
 
@@ -48,6 +48,10 @@ This is the frontend-only preview shipped with the source archive. It belongs to
 For a full end-to-end demo, deploy the backend separately and set `VITE_API_URL` in the Vercel project to its HTTPS API base URL (for example, `https://your-api.example.com/api`). Until then, authentication, uploads, dashboards, and other API-backed flows will not work on the live site.
 
 [Read the evaluator report](./Lanzey_SIH_Evaluator_Report.pdf)
+
+## Dataset provenance
+
+The backend seeds a deterministic demo dataset from [`backend/data/mining-demo-dataset.json`](./backend/data/mining-demo-dataset.json). It contains 10 illustrative mine-site records and annual example production values for 2020–2026; the remaining seeded geology, reserves, machinery, environment, and risk records are also synthetic. These values do not represent real mines or official records and must not be used for operational, safety, compliance, or public reporting decisions. Source labels identify the entries as synthetic demo data.
 
 ## Features
 
