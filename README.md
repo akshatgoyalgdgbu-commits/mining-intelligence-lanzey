@@ -5,7 +5,7 @@
 </p>
 
 <p align="center">
-  <a href="https://mining-intelligence-urbannova.vercel.app/"><img src="https://img.shields.io/badge/Live_Preview-Vercel-black?logo=vercel" alt="Open the live LANZEY preview"></a>
+  <a href="https://mining-intelligence-lanzey.vercel.app/"><img src="https://img.shields.io/badge/Live_App-Vercel-black?logo=vercel" alt="Open the live LANZEY app"></a>
   <a href="https://github.com/akshatgoyalgdgbu-commits/mining-intelligence-lanzey"><img src="https://img.shields.io/badge/Source-GitHub-181717?logo=github" alt="View source on GitHub"></a>
   <a href="./Lanzey_SIH_Evaluator_Report.pdf"><img src="https://img.shields.io/badge/Evaluator_Report-PDF-b31b1b" alt="Read the evaluator report"></a>
 </p>
@@ -141,7 +141,7 @@ For other environment values, see [Environment variables](#environment-variables
 <details>
 <summary><strong>Show demo credentials</strong></summary>
 
-These accounts are created only by the local development seed. The Render deployment instead creates a single administrator from its private `ADMIN_EMAIL` and `ADMIN_PASSWORD` settings.
+These accounts are created only by the local development seed. The Vercel deployment instead creates a single administrator from its private `ADMIN_EMAIL` and `ADMIN_PASSWORD` settings.
 
 All demo accounts use password `lanzey123`.
 
@@ -179,25 +179,27 @@ Do not put backend secrets in Vite variables. Values prefixed with `VITE_` are i
 
 ## Deployment
 
-### Full-stack demo on Render
+### Free Vercel deployment
 
-The root `render.yaml` deploys the Vite frontend and Express API together as
-one free web service, uses an SQLite database in `/tmp`, generates a JWT
-signing secret, and seeds one administrator account. Configure `ADMIN_EMAIL`
-and a unique `ADMIN_PASSWORD` of at least 16 characters in Render.
+The Vercel project is connected to this GitHub repository and deploys from the
+`main` branch. The repository's `vercel.json` routes the frontend and API
+through the same origin. Vercel Hobby is intended for personal projects and
+has usage limits; see [Vercel's plan details](https://vercel.com/docs/plans/hobby).
 
-To deploy, push this project to a GitHub repository, then create a Render
-Blueprint from that repository and apply `render.yaml`. The app will be served
-from the generated `onrender.com` URL, and API requests use the same origin.
+Set `ADMIN_EMAIL`, a unique `ADMIN_PASSWORD` of at least 16 characters, and
+a long random `JWT_SECRET` as encrypted Production and Preview environment
+variables in the Vercel project. Never commit these values. A redeploy is
+required after changing environment variables.
 
-This free demo can sleep while idle. Its SQLite database and uploaded documents
-are on temporary storage and can disappear after a restart or redeploy. Do not
-use it for private or production mining records. Durable database retention and
-uploaded file storage require managed/persistent storage and may incur costs.
+The demo API uses SQLite and temporary per-instance storage. Data and uploaded
+documents may disappear after a restart or redeploy, and separate serverless
+instances may not share the same database. Do not use it for private or
+production mining records. Durable database retention and uploaded file
+storage require external services and may incur costs.
 
-The production seed creates only the administrator configured in Render. It
-does not create the public demo accounts/password. Local development still
-seeds the demo accounts described above.
+The production seed creates only the configured administrator. It does not
+create the public demo accounts/password. Local development still seeds the
+demo accounts described above.
 
 ### Backend
 
@@ -251,7 +253,7 @@ The Express API is mounted under `/api`. See the backend source for request and 
 
 - OCR for scanned PDFs needs an external OCR service; the current PDF path handles text PDFs.
 - Field extraction is rule-based and should be reviewed by a human.
-- The included Render free-tier configuration is for demonstration only: services may sleep, and the SQLite database and uploaded files use temporary storage.
+- The included Vercel Hobby configuration is for demonstration only: SQLite data and uploaded files use temporary per-instance storage.
 - Use durable database and object storage before uploading private or production mining records.
 
 ---
