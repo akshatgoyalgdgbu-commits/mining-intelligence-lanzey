@@ -2,6 +2,7 @@
 
 /**
  * LANZEY Database Seed (SQLite compatible)
+ * All seeded mining figures are synthetic demo examples, not operational data.
  * No createMany with skipDuplicates — uses upsert/create with .catch()
  */
 
@@ -96,9 +97,9 @@ async function main() {
           productionMT: vals[i],
           targetMT:     +(vals[i] * 1.05).toFixed(2),
           coalType:     'non-coking',
-          source:       `Annual Production Report ${years[i]}`,
-          sourceDoc:    `Production_Report_${years[i]}.pdf`,
-          sourcePage:   Math.floor(Math.random() * 40) + 5,
+          source:       'Synthetic demo data; not an official production report',
+          sourceDoc:    'synthetic-demo-dataset.json',
+          sourcePage:   null,
         },
       }).catch(() => {}) // skip if already exists
       prodCount++
@@ -145,12 +146,12 @@ async function main() {
           gradeDesignation:s.gradeDesignation,
           ashContent:      s.ashContent,
           moistureContent: s.moistureContent,
-          dip:             +(Math.random() * 15 + 2).toFixed(1),
+          dip:             6.5,
           strike:          'NE-SW',
           mineable:        true,
-          source:          `Geological Survey Report — ${code}`,
-          sourceDoc:       `Geological_Report_${code}.pdf`,
-          sourcePage:      Math.floor(Math.random() * 60) + 10,
+          source:          'Synthetic demo data; not an official geological survey',
+          sourceDoc:       'synthetic-demo-dataset.json',
+          sourcePage:      null,
         },
       }).catch(() => {})
     }
@@ -164,14 +165,14 @@ async function main() {
         siteId,
         formation:       'Gondwana',
         blockName:       `${code}-Block-A`,
-        seamCount:       Math.floor(Math.random() * 4) + 1,
-        totalThickness:  +(Math.random() * 20 + 5).toFixed(1),
-        depth:           +(Math.random() * 100 + 30).toFixed(1),
+        seamCount:       2,
+        totalThickness:  14.5,
+        depth:           85,
         faults:          'Minor thrust faults in NE section',
         strata:          'Sandstone, shale, carbonaceous shale',
         explorationDate: new Date('2022-03-15'),
-        source:          `CMPDI Exploration Report — ${code}`,
-        sourceDoc:       `Exploration_${code}.pdf`,
+        source:          'Synthetic demo data; not an official exploration report',
+        sourceDoc:       'synthetic-demo-dataset.json',
         sourcePage:      15,
       },
     }).catch(() => {})
@@ -205,8 +206,8 @@ async function main() {
         verifiedBy:         r.status === 'verified' ? 'CMPDI Survey Team' : null,
         verifiedAt:         r.status === 'verified' ? new Date('2024-04-01') : null,
         notes:              r.mineable == null ? 'Mineable reserve requires additional borehole data.' : null,
-        source:             `Reserve Estimation Report — ${r.code}`,
-        sourceDoc:          `Reserve_Report_${r.code}.pdf`,
+        source:             'Synthetic demo data; not an official reserve estimate',
+        sourceDoc:          'synthetic-demo-dataset.json',
         sourcePage:         22,
       },
     }).catch(() => {})
@@ -244,7 +245,7 @@ async function main() {
           commissionDate:    new Date(`${2019 + (i % 3)}-04-01`),
           status:            statuses[i % statuses.length],
           location:          `${code} - Bench ${i + 1}`,
-          hoursOperated:     Math.floor(Math.random() * 15000) + 2000,
+          hoursOperated:     8000,
         },
       })
 
@@ -262,13 +263,13 @@ async function main() {
           data: {
             machineryId: machine.id,
             recordedAt:  new Date(Date.now() - j * 3600000),
-            fuelLevel:   Math.round(Math.random() * 40 + 55),
-            engineTemp:  Math.round(Math.random() * 20 + 75),
-            oilPressure: Math.round(Math.random() * 10 + 40),
-            rpm:         Math.round(Math.random() * 400 + 1200),
-            hoursToday:  Math.round(Math.random() * 8 + 1),
-            speed:       Math.round(Math.random() * 20),
-            loadWeight:  Math.round(Math.random() * 50 + 50),
+            fuelLevel:   72,
+            engineTemp:  84,
+            oilPressure: 45,
+            rpm:         1400,
+            hoursToday:  6,
+            speed:       10,
+            loadWeight:  75,
             status:      machine.status,
           },
         }).catch(() => {})
@@ -280,11 +281,11 @@ async function main() {
   // ── Environmental data ─────────────────────────────────────────────
   console.log('Creating environmental data...')
   const envParams = [
-    { paramType: 'air',   parameter: 'SPM',  unit: 'µg/m³', standard: 600,  val: () => Math.random() * 400 + 100 },
-    { paramType: 'air',   parameter: 'SO2',  unit: 'µg/m³', standard: 80,   val: () => Math.random() * 60 + 10   },
-    { paramType: 'water', parameter: 'pH',   unit: 'pH',    standard: 8.5,  val: () => Math.random() * 2 + 6.5   },
-    { paramType: 'water', parameter: 'TDS',  unit: 'mg/L',  standard: 2100, val: () => Math.random() * 1500 + 300 },
-    { paramType: 'noise', parameter: 'Leq',  unit: 'dB(A)', standard: 75,   val: () => Math.random() * 30 + 55   },
+    { paramType: 'air',   parameter: 'SPM',  unit: 'µg/m³', standard: 600,  val: () => 280 },
+    { paramType: 'air',   parameter: 'SO2',  unit: 'µg/m³', standard: 80,   val: () => 40   },
+    { paramType: 'water', parameter: 'pH',   unit: 'pH',    standard: 8.5,  val: () => 7.2   },
+    { paramType: 'water', parameter: 'TDS',  unit: 'mg/L',  standard: 2100, val: () => 800 },
+    { paramType: 'noise', parameter: 'Leq',  unit: 'dB(A)', standard: 75,   val: () => 68   },
   ]
   for (const [code, siteId] of Object.entries(siteMap).slice(0, 4)) {
     for (const ep of envParams) {
@@ -303,9 +304,9 @@ async function main() {
           observation:    v > ep.standard
             ? `Exceeds limit of ${ep.standard} ${ep.unit}.`
             : 'Within permissible limits.',
-          source:    `Env. Monitoring Report — ${code}`,
-          sourceDoc: `Env_${code}_Q2_2026.pdf`,
-          sourcePage: Math.floor(Math.random() * 30) + 5,
+          source:    'Synthetic demo data; not an official environmental report',
+          sourceDoc: 'synthetic-demo-dataset.json',
+          sourcePage: null,
         },
       }).catch(() => {})
     }
