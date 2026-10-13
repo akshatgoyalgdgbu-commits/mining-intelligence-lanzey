@@ -11,6 +11,7 @@ require('dotenv').config({ path: require('path').resolve(__dirname, '../../.env'
 const bcrypt = require('bcryptjs')
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
+const demoDataset = require('../../data/mining-demo-dataset.json')
 
 async function main() {
   console.log('\n🌱 LANZEY Seed Starting...\n')
@@ -46,18 +47,7 @@ async function main() {
 
   // ── Sites ──────────────────────────────────────────────────────────
   console.log('Creating mine sites...')
-  const siteDefs = [
-    { code: 'CCL-001',  name: 'Bhurkunda Mine',      location: 'Bhurkunda',  state: 'Jharkhand',      company: 'CCL',  type: 'opencast'    },
-    { code: 'CCL-002',  name: 'Kuju Mine',            location: 'Kuju',       state: 'Jharkhand',      company: 'CCL',  type: 'underground' },
-    { code: 'ECL-001',  name: 'Rajmahal Mine',        location: 'Rajmahal',   state: 'Jharkhand',      company: 'ECL',  type: 'opencast'    },
-    { code: 'BCCL-001', name: 'Jharia Mine',          location: 'Jharia',     state: 'Jharkhand',      company: 'BCCL', type: 'underground' },
-    { code: 'NCL-001',  name: 'Nigahi Mine',          location: 'Singrauli',  state: 'Madhya Pradesh', company: 'NCL',  type: 'opencast'    },
-    { code: 'NCL-002',  name: 'Dudhichua Mine',       location: 'Singrauli',  state: 'Madhya Pradesh', company: 'NCL',  type: 'opencast'    },
-    { code: 'SECL-001', name: 'Gevra Mine',           location: 'Korba',      state: 'Chhattisgarh',   company: 'SECL', type: 'opencast'    },
-    { code: 'MCL-001',  name: 'Lakhanpur Mine',       location: 'Jharsuguda', state: 'Odisha',         company: 'MCL',  type: 'opencast'    },
-    { code: 'WCL-001',  name: 'Majri Mine',           location: 'Chandrapur', state: 'Maharashtra',    company: 'WCL',  type: 'underground' },
-    { code: 'ECL-002',  name: 'Sonepur Bazari Mine',  location: 'Asansol',    state: 'West Bengal',    company: 'ECL',  type: 'opencast'    },
-  ]
+  const siteDefs = demoDataset.sites
   const siteMap = {}
   for (const s of siteDefs) {
     const site = await prisma.site.upsert({
@@ -71,19 +61,8 @@ async function main() {
 
   // ── Production (2020–2026) ─────────────────────────────────────────
   console.log('Creating production records...')
-  const productionByMine = {
-    'CCL-001':  [38.2, 41.5, 39.8, 44.1, 46.3, 43.7, 28.4],
-    'CCL-002':  [12.1, 13.4, 11.9, 14.2, 15.1, 14.8,  9.1],
-    'ECL-001':  [22.4, 24.8, 23.1, 25.6, 27.3, 26.1, 16.2],
-    'BCCL-001': [18.7, 19.2, 18.4, 20.1, 21.4, 20.8, 12.9],
-    'NCL-001':  [45.3, 48.7, 47.2, 51.4, 54.8, 52.3, 32.6],
-    'NCL-002':  [31.2, 33.8, 32.4, 35.9, 38.2, 36.7, 22.8],
-    'SECL-001': [52.1, 55.6, 53.8, 58.3, 62.4, 59.7, 37.2],
-    'MCL-001':  [28.4, 30.2, 29.1, 32.8, 35.1, 33.6, 20.9],
-    'WCL-001':  [15.3, 16.8, 15.9, 17.6, 18.9, 18.1, 11.2],
-    'ECL-002':  [24.7, 26.3, 25.1, 28.4, 30.2, 28.9, 17.9],
-  }
-  const years = [2020, 2021, 2022, 2023, 2024, 2025, 2026]
+  const productionByMine = demoDataset.productionMT
+  const years = demoDataset.productionYears
   let prodCount = 0
   for (const [code, vals] of Object.entries(productionByMine)) {
     const siteId = siteMap[code]
